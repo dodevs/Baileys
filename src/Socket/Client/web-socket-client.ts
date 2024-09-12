@@ -24,13 +24,21 @@ export class WebSocketClient extends AbstractSocketClient {
 			return
 		}
 
-		this.socket = new WebSocket(this.url, {
-			origin: DEFAULT_ORIGIN,
-			headers: this.config.options?.headers as {},
-			handshakeTimeout: this.config.connectTimeoutMs,
-			timeout: this.config.connectTimeoutMs,
-			agent: this.config.agent,
-		})
+		const response = await fetch(this.url, {
+			headers: {
+				...this.config.options?.headers as {},
+				Upgrade: "websocket"
+			}
+		});
+
+		this.socket = (response as any).webSocket as WebSocket
+		// this.socket = new WebSocket(this.url, {
+		// 	origin: DEFAULT_ORIGIN,
+		// 	headers: this.config.options?.headers as {},
+		// 	handshakeTimeout: this.config.connectTimeoutMs,
+		// 	timeout: this.config.connectTimeoutMs,
+		// 	agent: this.config.agent,
+		// })
 
 		this.socket.setMaxListeners(0)
 
